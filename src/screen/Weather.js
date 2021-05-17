@@ -11,39 +11,41 @@ export class Weather extends Component {
       data: {},
       latitude: 0.0,
       longitude: 0.0,
+      city: '',
+      appid: 'e1acc455560fc83cf03bd4f0d0bec768',
     };
   }
 
   componentDidMount() {
-    this.getData();
     this.Location();
+    this.getSearchData();
   }
 
-  Location() {
+  Location = () => {
     GetLocation.getCurrentPosition({
       enableHighAccuracy: true,
       timeout: 15000,
     })
-      .then(location => {
-        // console.log(location);
+      .then(response => {
+        // console.log('Lokasi' + JSON.stringify(response));
         this.setState({
-          latitude: location.latitude,
-          longitude: location.longitude,
+          latitude: response.latitude,
+          longitude: response.longitude,
         });
       })
       .catch(error => {
         const {code, message} = error;
         console.warn(code, message);
       });
-  }
+  };
 
-  getData() {
+  getData = () => {
     axios
       .get('https://api.openweathermap.org/data/2.5/onecall', {
         params: {
           lat: this.state.latitude,
           lon: this.state.longitude,
-          appid: 'e1acc455560fc83cf03bd4f0d0bec768',
+          appid: this.state.appid,
         },
       })
       .then(response => {
@@ -56,14 +58,31 @@ export class Weather extends Component {
             '.png',
         });
       })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  getSearchData = () => {
+    axios
+      .get(`https://api.openweathermap.org/data/2.5/weather`, {
+        params: {
+          q: this.state.city,
+          appid: this.state.appid,
+        },
+      })
+      .then(response => {
+        console.log(response);
+      })
       .catch(function (error) {
         console.log(error);
       });
-  }
+  };
 
   render() {
     // console.log(this.state.latitude);
     // console.log(this.state.longitude);
+    // console.log(this.state.city);
     return (
       <View style={{alignItems: 'center', flex: 1, marginTop: 10}}>
         <Icon name="cloud" style={{fontSize: 40}} />
@@ -72,13 +91,14 @@ export class Weather extends Component {
           style={{
             textAlign: 'center',
             backgroundColor: '#7fffd4',
-            borderRadius: 30, //menbentuk oval
+            borderRadius: 30,
             width: '99%',
             height: 45,
             marginBottom: 20,
             marginTop: 20,
           }}
           placeholder="Masukan Nama Kota"
+          onChangeText={data => this.setState({city: data})}
         />
         <TouchableOpacity
           style={{
@@ -87,7 +107,8 @@ export class Weather extends Component {
             height: 30,
             alignItems: 'center',
             borderRadius: 20,
-          }}>
+          }}
+          onPress={() => this.getSearchData()}>
           <Text style={{color: 'white', marginTop: 4}}>Cari</Text>
         </TouchableOpacity>
       </View>
