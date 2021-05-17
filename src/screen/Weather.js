@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import {Image, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import GetLocation from 'react-native-get-location';
 import Icon from 'react-native-vector-icons/Feather';
-import API_Key from '../API_Key';
 
 export class Weather extends Component {
   constructor(props) {
@@ -44,7 +43,7 @@ export class Weather extends Component {
         params: {
           lat: this.state.latitude,
           lon: this.state.longitude,
-          appid: API_Key,
+          appid: 'e1acc455560fc83cf03bd4f0d0bec768',
         },
       })
       .then(response => {
